@@ -1,0 +1,135 @@
+{
+  "description": "Create an NGINX Plus and two NGINX Open Source Images",
+  "variables": {
+    "home": "{{env `HOME`}}",
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "region": "eu-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "name": "nginx-app-protect",
+      "ami_name": "nginx-plus {{isotime \"2006-01-02\"}}{{uuid}}",
+      "instance_type": "t2.micro",
+      "region": "{{user `region`}}",
+      "source_ami": "ami-09e5afc68eed60ef4",
+      "ssh_username": "centos",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "tags": {
+        "Name": "nginx-app-protect"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{user `home`}}/.ssh/ngx-certs",
+      "destination": "~/.ssh/ngx-certs",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "connect_nginx_server_to_controller.yaml",
+      "destination": "connect_nginx_server_to_controller.yaml",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "configure_me_here.yaml",
+      "destination": "configure_me_here.yaml",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "#sudo -H yum update -y",
+		"#sudo -H yum upgrade -y",
+        "#sudo -H yum update -y",
+        "sudo yum install epel-release -y",
+        "sudo yum install ansible -y",
+		"ssh-keygen -f /tmp/sshkey -q -N ''",
+		"chmod +r /tmp/sshkey"
+      ],
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+   {
+      "type": "file",
+      "destination": "{{user `home`}}/.ssh/app-protect-key.pub",
+      "source": "/tmp/sshkey.pub",
+	  "direction" : "download",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+   {
+      "type": "file",
+      "destination": "{{user `home`}}/.ssh/app-protect-key.pem",
+      "source": "/tmp/sshkey",
+	  "direction" : "download",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },		
+    {
+      "type": "ansible-local",
+      "galaxy_file": "requirements.yml",
+      "playbook_file": "playbook-lb.yml",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+	
+    {
+      "type": "shell",
+      "inline": [
+        "#sudo -H yum update -y",
+		"sudo yum -y install rsyslog",
+		"sudo setenforce permissive",
+		"sudo sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/sysconfig/selinux",
+        "sudo yum install nginx-plus-module-njs -y",
+		"sudo yum install app-protect -y",
+		"sudo sed -i --follow-symlinks '1i\\load_module modules/ngx_http_app_protect_module.so;' /etc/nginx/nginx.conf",
+		"sudo yum install wget -y",
+		"sudo wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/app-protect-signatures-7.repo",
+		"sudo yum install -y app-protect-attack-signatures",
+        "sudo yum list | grep nginx-plus",
+		"cat /etc/centos-release",
+		"sudo sed -i --follow-symlinks '21i\\$InputTCPServerRun 514' /etc/rsyslog.conf",
+		"sudo sed -i --follow-symlinks '21i\\$ModLoad imtcp' /etc/rsyslog.conf",
+
+	    "#sudo apt upgrade -y"
+      ],
+      "only": [
+        "nginx-app-protect"
+      ]
+    },	
+
+	
+
+    {
+      "type": "shell",
+      "script": "setup_cheese_endpoint.sh",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "setup_app_protect_proxy.sh",
+      "only": [
+        "nginx-app-protect"
+      ]
+    }
+	
+  ]
+}

@@ -1,0 +1,13 @@
+# Please Configure the following variable to suit your NoIP account configuration.
+
+fqdn: "controller.nginxdemo.net"
+
+# The following variables may also be changed to suit your preferred Controller login credentials.
+
+user_email: "a.user@f5.com"
+user_password: "Password1"
+nginx_controller_api_version: "v1"
+
+validate_certs: false
+
+nginx_controller_license: "{{ lookup('file', 'license.txt') | b64encode }}"
