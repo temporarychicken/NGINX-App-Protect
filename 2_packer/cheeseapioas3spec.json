@@ -1,0 +1,64 @@
+{
+        "openapi": "3.0.0",
+        "info": {
+          "version": "v1",
+          "title": "Cheese API"
+        },
+        "paths": {
+          "/cheddar": {
+            "x-controller-match-method": "EXACT",
+            "get": {
+              "description": "Returns an individual cheese profile.",
+              "responses": {
+                "200": {
+                  "description": "Returns the profile of a famous cheese"
+                }
+              }
+            }
+          },
+          "/emmental": {
+            "x-controller-match-method": "EXACT",
+            "get": {
+              "description": "Returns an individual cheese profile.",
+              "responses": {
+                "200": {
+                  "description": "Returns the profile of a famous cheese"
+                }
+              }
+            }
+          },
+          "/beemster": {
+            "x-controller-match-method": "EXACT",
+            "get": {
+              "description": "Returns an individual cheese profile.",
+              "responses": {
+                "200": {
+                  "description": "Returns the profile of a famous cheese"
+                }
+              }
+            }
+          },
+          "/gouda": {
+            "x-controller-match-method": "EXACT",
+            "get": {
+              "description": "Returns an individual cheese profile.",
+              "responses": {
+                "200": {
+                  "description": "Returns the profile of a famous cheese"
+                }
+              }
+            }
+          },
+          "/wensleydale": {
+            "x-controller-match-method": "EXACT",
+            "get": {
+              "description": "Returns an individual cheese profile.",
+              "responses": {
+                "200": {
+                  "description": "Returns the profile of a famous cheese"
+                }
+              }
+            }
+          }
+        }
+      }

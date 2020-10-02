@@ -5,6 +5,8 @@ resource "aws_instance" "nginx-app-protect-firewall" {
   security_groups             = [aws_security_group.nginx-web-facing.id]
   subnet_id                   = aws_subnet.main.id
   private_ip                  = "10.0.1.100"
+  associate_public_ip_address = true
+
   
   tags = {
     Name = "nginx-app-protect-firewall"

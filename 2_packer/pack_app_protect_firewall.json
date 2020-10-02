@@ -33,14 +33,6 @@
     },
     {
       "type": "file",
-      "source": "connect_nginx_server_to_controller.yaml",
-      "destination": "connect_nginx_server_to_controller.yaml",
-      "only": [
-        "nginx-app-protect"
-      ]
-    },
-    {
-      "type": "file",
       "source": "configure_me_here.yaml",
       "destination": "configure_me_here.yaml",
       "only": [
@@ -107,14 +99,41 @@
 		"sudo sed -i --follow-symlinks '21i\\$InputTCPServerRun 514' /etc/rsyslog.conf",
 		"sudo sed -i --follow-symlinks '21i\\$ModLoad imtcp' /etc/rsyslog.conf",
 
-	    "#sudo apt upgrade -y"
+	    "#sudo apt upgrade -y",
+		"sudo cp /etc/nginx/NginxApiSecurityPolicy.json /home/centos/NginxApiSecurityPolicy.json.original"
       ],
       "only": [
         "nginx-app-protect"
       ]
     },	
 
-	
+    {
+      "type": "file",
+      "source": "cheeseapioas3spec.json",
+      "destination": "/home/centos/cheeseapioas3spec.json",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "NginxApiSecurityPolicy.json",
+      "destination": "/home/centos/NginxApiSecurityPolicy.json",
+      "only": [
+        "nginx-app-protect"
+      ]
+    },	
+
+   {
+      "type": "shell",
+      "inline": [
+		"sudo cp /home/centos/NginxApiSecurityPolicy.json /etc/nginx/NginxApiSecurityPolicy.json",
+		"sudo cp /home/centos/cheeseapioas3spec.json /etc/nginx/cheeseapioas3spec.json"
+      ],
+      "only": [
+        "nginx-app-protect"
+      ]
+    },	
 
     {
       "type": "shell",
